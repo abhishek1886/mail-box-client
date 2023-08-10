@@ -18,7 +18,9 @@ const sent = createSlice({
         state.sentItems = [];
         state.dataFetched = false;
       } else {
-
+        const { _id } = action.payload;
+        const updatedList = state.sentItems.filter((item) => item._id !== _id);
+        state.sentItems = updatedList;
       }
     }
   },

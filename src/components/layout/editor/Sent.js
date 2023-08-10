@@ -48,6 +48,7 @@ const Sent = () => {
         sub={item.subject}
         email={item.sendeeEmail}
         date={item.date}
+        _id={item._id}
       />
     ));
   }

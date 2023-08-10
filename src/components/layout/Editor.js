@@ -36,7 +36,7 @@ const EditorPage = () => {
         return <Sent />;
     }
   };
-  console.log(dataFetched);
+  
   useEffect(() => {
     if (!dataFetched) {
       const email = localStorage.getItem("email").replace(/[@.]/g, "");

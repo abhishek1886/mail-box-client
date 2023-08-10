@@ -16,7 +16,6 @@ const Inbox = () => {
   const dataFetched = useSelector((state) => state.inbox.dataFetched);
 
   const history = useHistory();
-  console.log(dataFetched);
   useEffect(() => {
     // if (!dataFetched) {
     //   console.log(dataFetched);
@@ -95,6 +94,8 @@ const Inbox = () => {
     setShowList(true);
     history.push("/editor/inbox");
   };
+
+
 
   return (
     <React.Fragment>

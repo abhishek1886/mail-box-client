@@ -1,10 +1,11 @@
-import React, { useDebugValue, useState } from "react";
+import React, { useDebugValue, useEffect, useState } from "react";
 
 import { Editor } from "react-draft-wysiwyg";
 import "../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { Form, InputGroup, Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { sentActions } from "../../../store/sent-slice";
+import { useHistory } from 'react-router-dom';
 import axios from "axios";
 
 const Compose = () => {
@@ -15,6 +16,7 @@ const Compose = () => {
   const [editorState, setEditorState] = useState("");
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const formChangeHandler = (e) => {
     const { name, value } = e.target;
@@ -27,19 +29,28 @@ const Compose = () => {
   const editorChangeHandler = (editorState) => {
     setEditorState(editorState);
   };
-
+  useEffect(() => {
+    history.push('/editor/compose')
+  }, [])
   const submitHandler = (e) => {
     e.preventDefault();
 
     const sendeeEmail = formData.email.replace(/[@.]/g, "");
     const senderEmail = localStorage.getItem("email").replace(/[@.]/g, "");
-
+    const currentDate = new Date();
+    const formattedTime = currentDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
     const data = {
       subject: formData.subject,
       sendeeEmail: formData.email,
       senderEmail: localStorage.getItem("email"),
       id: Math.random().toString(),
       message: editorState.getCurrentContent().getPlainText(),
+      date: formattedTime,
+      isNew: true,
     };
 
     axios.post(
@@ -69,6 +80,7 @@ const Compose = () => {
             name="email"
             value={formData.email}
             onChange={formChangeHandler}
+            required
           />
         </InputGroup>
 
@@ -79,6 +91,7 @@ const Compose = () => {
             name="subject"
             value={formData.subject}
             onChange={formChangeHandler}
+            required
           />
         </InputGroup>
         <Editor

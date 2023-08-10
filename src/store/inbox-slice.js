@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = { inboxItems: [], dataFetched: false };
+const initialState = { inboxItems: [], dataFetched: false, totalNewMails: 0 };
 
 const inbox = createSlice({
   name: "inbox",
@@ -8,6 +8,9 @@ const inbox = createSlice({
   reducers: {
     addItems(state, actions) {
       state.dataFetched = true;
+      if(actions.payload.isNew === true){
+        state.totalNewMails = state.totalNewMails + 1;
+      } 
       state.inboxItems = [actions.payload, ...state.inboxItems];
     },
 
@@ -15,6 +18,7 @@ const inbox = createSlice({
       if(action.payload.type === 'all'){
         state.inboxItems = [];
         state.dataFetched = false;
+        state.totalNewMails = 0;
       } else {
 
       }

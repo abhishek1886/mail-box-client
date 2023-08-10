@@ -7,12 +7,17 @@ const SentItems = (props) => {
       key={props.id}
       id={props.id}
       as="li"
-      className="d-flex flex-column"
+      className="d-flex justify-content-between align-items-center"
     >
-      <p className="mb-0">{props.message}</p>
-      <p className="small mb-0">
-        to <Badge className="bg-secondary">{props.email}</Badge>
-      </p>
+      <div>
+        <p className="mb-0">{props.sub}</p>
+        <p className="small mb-0" style={{ color: "grey"}}>
+          to <Badge className="bg-secondary">{props.email}</Badge>
+        </p>
+      </div>
+      <div className=" small" style={{ color: "grey"}}>
+        {props.date}
+      </div>
     </ListGroup.Item>
   );
 };

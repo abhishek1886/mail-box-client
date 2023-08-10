@@ -3,11 +3,20 @@ import { ListGroup, Badge, Image } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { sentActions } from "../../../store/sent-slice";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 const SentItems = (props) => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const deleteButtonHandler = () => {
+  const listItemClickHandler = () => {
+    history.push(`/editor/inbox/${props._id}`);
+    props.onClick(props._id);
+  };
+
+  const deleteButtonHandler = (event) => {
+    event.stopPropagation();
+
     console.log(props._id);
     const email = localStorage.getItem("email").replace(/[@.]/g, "");
     axios
@@ -27,12 +36,13 @@ const SentItems = (props) => {
       key={props.id}
       id={props.id}
       as="li"
+      onClick={listItemClickHandler}
       className="d-flex justify-content-between align-items-center"
     >
       <div>
         <p className="mb-0">{props.sub}</p>
         <p className="small mb-0" style={{ color: "grey" }}>
-          to <Badge className="bg-secondary">{props.email}</Badge>
+          to <Badge className="bg-secondary">{props.sendeeEmail}</Badge>
         </p>
       </div>
       <div

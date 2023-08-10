@@ -21,7 +21,8 @@ const Email = (props) => {
           className="border-bottom border-dark small pb-2"
           style={{ color: "grey" }}
         >
-          from <Badge bg="secondary">{data.senderEmail}</Badge>
+          {props.location === 'sent' && <span>to <Badge bg="secondary">{data.sendeeEmail}</Badge></span>  }
+          {props.location === 'inbox' && <span>from <Badge bg="secondary">{data.senderEmail}</Badge></span>}
         </p>
         <p>{data.message}</p>
       </Container>

@@ -80,7 +80,8 @@ const Inbox = () => {
         id={item.id}
         message={item.message}
         sub={item.subject}
-        email={item.senderEmail}
+        senderEmail={item.senderEmail}
+        sendeeEmail={item.sendeeEmail}
         date={item.date}
         _id={item._id}
         onClick={emailClickHandler}
@@ -106,7 +107,7 @@ const Inbox = () => {
           {listItems}
         </ListGroup>
       )}
-      {!showList && id && <Email goBack={goBackHandler} data={id} />}
+      {!showList && id && <Email goBack={goBackHandler} data={id} location={'inbox'} />}
     </React.Fragment>
   );
 };

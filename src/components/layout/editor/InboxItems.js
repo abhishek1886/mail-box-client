@@ -51,7 +51,7 @@ const InboxItems = (props) => {
         <div className="d-inline-block">
           <p className={`mb-0 ${props.isNew ? "fw-bold" : ""}`}>{props.sub}</p>
           <p className="small mb-0" style={{ color: "grey" }}>
-            from <Badge className="bg-secondary">{props.email}</Badge>
+            from <Badge className="bg-secondary">{props.senderEmail}</Badge>
           </p>
         </div>
       </div>

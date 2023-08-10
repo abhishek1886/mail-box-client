@@ -6,13 +6,13 @@ import { Link, useHistory } from "react-router-dom";
 const Home = () => {
   const history = useHistory();
   const clickHandler = () => {
-    history.push("/expenses");
+    history.push("/editor");
   };
   return (
     <Container fluid className="m-5">
       <h1>Welcome to Mail Box Client</h1>
       <Button
-        variant="info"
+        variant="secondary"
         className="rounded-4 fw-bold px-4"
         onClick={clickHandler}
       >

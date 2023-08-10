@@ -61,7 +61,7 @@ const SignUp = () => {
 
   return (
     <Container
-      className="mx-5 mx-auto"
+      className="bg-alitlightmx-5 mx-auto"
       style={{ maxWidth: "450px", marginTop: "150px" }}
     >
       <Card className="bg-secondary shadow p-3 px-4">
@@ -104,7 +104,7 @@ const SignUp = () => {
             <label htmlFor="confirmPassword">Confrim Password</label>
           </Form.Floating>
           <div className="d-flex flex-column align-items-center justify-content-center gap-2  mt-2">
-            <Button type="submit" variant="info">Sign Up</Button>
+            <Button type="submit">Sign Up</Button>
             <Link to='/login' >
               <Button variant="boder-info">
                 Already have an account? Login

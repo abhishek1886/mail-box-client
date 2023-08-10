@@ -1,13 +1,24 @@
 // Override default variables before the import
 
-$primary: #114259;
-$seconadary: #269e9f;
+$primary: #111962;
+$secondary: #6aa6be;
 $dark: #050200;
 $light: #ebe6e3;
 $success: #00b560;
 $info: #e8ceff;
 $warning: #ebce00;
 $danger: #fd0013;
+
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+
+$custom-theme-colors: (
+  "altlight": #f2ebfa,
+  "altdark": #a185eb,
+);
+
+$theme-colors: map-merge($custom-theme-colors, $theme-colors );
+
 
 // Import Bootstrap and its default variables
 @import '~bootstrap/scss/bootstrap.scss';

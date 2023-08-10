@@ -2,9 +2,12 @@ import React, { useState } from "react";
 
 import { Container, Card, Form, Button } from 'react-bootstrap'
 import { Link, useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
+import { authActions } from "../../../store/auth-slice";
 import ForgotPassword from "./ForgotPassword";
 
 const LogIn = () => {
+  const [isLoginPage, setIsLoginPage] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -12,6 +15,7 @@ const LogIn = () => {
   });
 
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const inputFormHandler = (e) => {
     const { name, value } = e.target;
@@ -39,9 +43,8 @@ const LogIn = () => {
       );
 
       if (res.ok) {
-        const data = await res.json();
-        // dispatch(authActions.login({ token: data.idToken, email: data.email }));
-        console.log(data);
+        const data = await res.json();        
+        dispatch(authActions.login({ token: data.idToken, email: data.email}))
         history.push("/home");
         setFormData({
           email: "",
@@ -61,10 +64,11 @@ const LogIn = () => {
     }
   };
 
-  const forgotPasswordHandler = () => {};
+  const forgotPasswordHandler = () => {setIsLoginPage(prev => !prev)};
 
   return (
-    <Container
+    <React.Fragment>
+      {isLoginPage && <Container
       className="mx-5 mx-auto"
       style={{ maxWidth: "450px", marginTop: "150px" }}
     >
@@ -106,7 +110,10 @@ const LogIn = () => {
               </div>
         </Form>
       </Card>
-    </Container>
+    </Container>}
+    {!isLoginPage && <ForgotPassword onClick={forgotPasswordHandler} />}
+    </React.Fragment>
+    
   );
 };
 

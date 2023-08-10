@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import {
-  Container,
   Row,
   Col,
   ToggleButton,
@@ -17,13 +16,44 @@ import { inboxActions } from "../../store/inbox-slice";
 
 const EditorPage = () => {
   const [activeButton, setActiveButton] = useState("compose");
-
-  const totalNewMails = useSelector(state => state.inbox.totalNewMails);
-  const dataFetched = useSelector(state => state.inbox.dataFetched);
+  const totalNewMails = useSelector((state) => state.inbox.totalNewMails);
+  const dataFetched = useSelector((state) => state.inbox.dataFetched);
+  const inbox = useSelector((state) => state.inbox.inboxItems);
   const dispatch = useDispatch();
 
   const handleButtonClick = (button) => {
     setActiveButton(button);
+  };
+
+  const checkForNewMails = () => {
+    console.log('checked');
+    if (dataFetched) {
+      console.log(dataFetched);
+      const email = localStorage.getItem("email").replace(/[@.]/g, "");
+
+      axios
+        .get(
+          `https://mail-box-client-a8037-default-rtdb.firebaseio.com/${email}/recieved.json`
+        )
+        .then((res) => {
+          let storedData;
+          if (res.data) {
+            storedData = Object.entries(res.data).map(([key, value]) => ({
+              ...value,
+              _id: key,
+            }));
+            const newMails = storedData.filter(
+              (data) => !inbox.some((d) => d._id === data._id)
+            );
+            console.log(newMails);
+            if (newMails.length > 0) {
+              newMails.forEach((data) => {
+                dispatch(inboxActions.addItems(data));
+              });
+            }
+          }
+        });
+    }
   };
 
   const renderContent = () => {
@@ -36,7 +66,7 @@ const EditorPage = () => {
         return <Sent />;
     }
   };
-  
+
   useEffect(() => {
     if (!dataFetched) {
       const email = localStorage.getItem("email").replace(/[@.]/g, "");
@@ -60,11 +90,25 @@ const EditorPage = () => {
     }
   }, [dataFetched, dispatch]);
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      checkForNewMails();
+    }, 2000);
+
+    return () => {
+      clearInterval(id);
+    };
+    // checkForNewMails();
+  }, [dataFetched, inbox, dispatch]);
+
   return (
     <div className=" bg-light">
       <Row>
-        <Col className="col-3 bg-altlight px-0" style={{ paddingBottom: '500px'}}>
-          <ButtonGroup className="w-100 " vertical >
+        <Col
+          className="col-3 bg-altlight px-0"
+          style={{ paddingBottom: "500px" }}
+        >
+          <ButtonGroup className="w-100 " vertical>
             <ToggleButton
               variant="outline-secondary"
               id="1"
@@ -85,7 +129,10 @@ const EditorPage = () => {
               active={activeButton === "inbox"}
               onClick={() => handleButtonClick("inbox")}
             >
-              Inbox <div className="d-inline-block text-end"><Badge pill>{totalNewMails}</Badge></div>
+              Inbox{" "}
+              <div className="d-inline-block text-end">
+                <Badge pill>{totalNewMails}</Badge>
+              </div>
             </ToggleButton>
             <ToggleButton
               variant="outline-secondary"

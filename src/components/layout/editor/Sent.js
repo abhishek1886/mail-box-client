@@ -16,6 +16,7 @@ const Sent = () => {
   const dataFetched = useSelector((state) => state.sent.dataFetched);
 
   const history = useHistory();
+  console.log(dataFetched);
   useEffect(() => {
     if (!dataFetched) {
       const email = localStorage.getItem("email").replace(/[@.]/g, "");

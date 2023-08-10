@@ -9,7 +9,6 @@ import axios from "axios";
 const InboxItems = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
-
   const listItemClickHandler = () => {
     history.push(`/editor/inbox/${props._id}`);
     props.onClick(props._id);

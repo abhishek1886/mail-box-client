@@ -4,9 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { ListGroup } from "react-bootstrap";
 import { sentActions } from "../../../store/sent-slice";
 import SentItems from "./SentItems";
-import axios from "axios";
 import { useHistory } from "react-router-dom";
 import Email from "./Email";
+import useGet from "../../hooks/useFetch";
 
 const Sent = () => {
   const [showList, setShowList] = useState(true);
@@ -14,28 +14,12 @@ const Sent = () => {
   const sent = useSelector((state) => state.sent.sentItems);
   const dispatch = useDispatch();
   const dataFetched = useSelector((state) => state.sent.dataFetched);
-
+  const { fetchData } = useGet();
   const history = useHistory();
-  console.log(dataFetched);
+
   useEffect(() => {
     if (!dataFetched) {
-      const email = localStorage.getItem("email").replace(/[@.]/g, "");
-      axios
-        .get(
-          `https://mail-box-client-a8037-default-rtdb.firebaseio.com/${email}/sent.json`
-        )
-        .then((res) => {
-          let storedData;
-          if (res.data) {
-            storedData = Object.entries(res.data).map(([key, value]) => ({
-              ...value,
-              _id: key,
-            }));
-            storedData.reverse().forEach((data) => {
-              dispatch(sentActions.addItem(data));
-            });
-          }
-        });
+      fetchData("sent");
     }
     if (dataFetched) {
       history.push("/editor/sent");
@@ -70,7 +54,6 @@ const Sent = () => {
         date={item.date}
         onClick={emailClickHandler}
         _id={item._id}
-        
       />
     ));
   }
@@ -86,11 +69,19 @@ const Sent = () => {
       {showList && <h3>Sent</h3>}
       {listItems.length === 0 && showList && <p>No sent emails. </p>}
       {listItems.length > 0 && showList && (
-        <ListGroup as="ol" style={{ maxWidth: "700px" }}>
-          {listItems}
-        </ListGroup>
+        <div className="scrollable-list">
+          <ListGroup
+            as="ol"
+            style={{ maxWidth: "700px", maxHeight: "600px" }}
+            className="list-group-flush overflow-auto"
+          >
+            {listItems}
+          </ListGroup>
+        </div>
       )}
-      {!showList && id && <Email goBack={goBackHandler} data={id} location={'sent'}/>}
+      {!showList && id && (
+        <Email goBack={goBackHandler} data={id} location={"sent"} />
+      )}
     </React.Fragment>
   );
 };

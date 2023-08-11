@@ -1,24 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import {
-  Row,
-  Col,
-  ToggleButton,
-  ButtonGroup,
-  Badge,
-} from "react-bootstrap";
+import { Row, Col, ToggleButton, ButtonGroup, Badge } from "react-bootstrap";
 import Compose from "./editor/Compose";
 import Inbox from "./editor/Inbox";
 import Sent from "./editor/Sent";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { inboxActions } from "../../store/inbox-slice";
+import useGet from "../hooks/useFetch";
 
 const EditorPage = () => {
   const [activeButton, setActiveButton] = useState("compose");
   const totalNewMails = useSelector((state) => state.inbox.totalNewMails);
   const dataFetched = useSelector((state) => state.inbox.dataFetched);
   const inbox = useSelector((state) => state.inbox.inboxItems);
+  const {fetchData, data} = useGet();
   const dispatch = useDispatch();
 
   const handleButtonClick = (button) => {
@@ -26,33 +21,18 @@ const EditorPage = () => {
   };
 
   const checkForNewMails = () => {
-    console.log('checked');
     if (dataFetched) {
-      console.log(dataFetched);
-      const email = localStorage.getItem("email").replace(/[@.]/g, "");
-
-      axios
-        .get(
-          `https://mail-box-client-a8037-default-rtdb.firebaseio.com/${email}/recieved.json`
-        )
-        .then((res) => {
-          let storedData;
-          if (res.data) {
-            storedData = Object.entries(res.data).map(([key, value]) => ({
-              ...value,
-              _id: key,
-            }));
-            const newMails = storedData.filter(
-              (data) => !inbox.some((d) => d._id === data._id)
-            );
-            console.log(newMails);
-            if (newMails.length > 0) {
-              newMails.forEach((data) => {
-                dispatch(inboxActions.addItems(data));
-              });
-            }
-          }
-        });
+      fetchData("recieved");
+      if (data) {
+        const newMails = data.filter(
+          (data) => !inbox.some((d) => d._id === data._id)
+        );
+        if (newMails.length > 0) {
+          newMails.forEach((data) => {
+            dispatch(inboxActions.addItems(data));
+          });
+        }
+      }
     }
   };
 
@@ -69,24 +49,7 @@ const EditorPage = () => {
 
   useEffect(() => {
     if (!dataFetched) {
-      const email = localStorage.getItem("email").replace(/[@.]/g, "");
-
-      axios
-        .get(
-          `https://mail-box-client-a8037-default-rtdb.firebaseio.com/${email}/recieved.json`
-        )
-        .then((res) => {
-          let storedData;
-          if (res.data) {
-            storedData = Object.entries(res.data).map(([key, value]) => ({
-              ...value,
-              _id: key,
-            }));
-            storedData.forEach((data) => {
-              dispatch(inboxActions.addItems(data));
-            });
-          }
-        });
+      fetchData("recieved");
     }
   }, [dataFetched, dispatch]);
 
@@ -106,7 +69,7 @@ const EditorPage = () => {
       <Row>
         <Col
           className="col-3 bg-altlight px-0"
-          style={{ paddingBottom: "500px" }}
+          style={{ paddingBottom: "520px" }}
         >
           <ButtonGroup className="w-100 " vertical>
             <ToggleButton

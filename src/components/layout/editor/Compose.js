@@ -6,7 +6,7 @@ import { Form, InputGroup, Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { sentActions } from "../../../store/sent-slice";
 import { useHistory } from 'react-router-dom';
-import axios from "axios";
+import useGet from "../../hooks/useFetch";
 
 const Compose = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +14,7 @@ const Compose = () => {
     subject: "",
   });
   const [editorState, setEditorState] = useState("");
-
+  const { postData } = useGet();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -29,10 +29,12 @@ const Compose = () => {
   const editorChangeHandler = (editorState) => {
     setEditorState(editorState);
   };
+
   useEffect(() => {
     history.push('/editor/compose')
   }, [])
-  const submitHandler = (e) => {
+  
+  const submitHandler = async(e) => {
     e.preventDefault();
 
     const sendeeEmail = formData.email.replace(/[@.]/g, "");
@@ -53,14 +55,9 @@ const Compose = () => {
       isNew: true,
     };
 
-    axios.post(
-      `https://mail-box-client-a8037-default-rtdb.firebaseio.com/${sendeeEmail}/recieved.json`,
-      data
-    );
-    axios.post(
-      `https://mail-box-client-a8037-default-rtdb.firebaseio.com/${senderEmail}/sent.json`,
-      data
-    );
+    await postData(sendeeEmail, "recieved", data)
+    await postData(senderEmail, "sent", data)
+
     setFormData({
       email: "",
       subject: "",
@@ -85,6 +82,7 @@ const Compose = () => {
         </InputGroup>
 
         <InputGroup className="mb-2">
+        <InputGroup.Text id="toUser">Sub</InputGroup.Text>
           <Form.Control
             type="text"
             aria-describedby="subject"
@@ -95,9 +93,11 @@ const Compose = () => {
           />
         </InputGroup>
         <Editor
+          required
           toolbarOnFocus
           wrapperClassName="border border-info"
           toolbarClassName="border-bottom border-dark"
+          editorClassName="bg-white m-1 p-2"
           editorState={editorState}
           onEditorStateChange={editorChangeHandler}
         />

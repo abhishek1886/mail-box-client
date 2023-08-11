@@ -2,35 +2,22 @@ import React, { useState, useRef } from "react";
 
 import { Button, Form, Container, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import useAuth from "../../hooks/auth-hook";
 
 const ForgotPassword = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef();
+  const [authAction] = useAuth();
 
-  const clickHandler = async (e) => {
-    try {
-      setIsLoading(true);
-      const res = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDH9plc7T7h6CQDIKTBp6HCF-nBjgzPDHg`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            requestType: "PASSWORD_RESET",
-            email: inputRef.current.value
-          }),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      );
-      setIsLoading(false);
-      if(!res.ok){
-        const data = await res.json();
-        throw new Error(data.error.message);
-      }
-    } catch (err) {
-      alert(err.message);
-    }
+  const clickHandler = (e) => {
+    setIsLoading(true);
+    const payload = {
+      requestType: "PASSWORD_RESET",
+      email: inputRef.current.value,
+    };
+    authAction(payload, "forgotPassword");
+
+    setIsLoading(false);
   };
 
   return (

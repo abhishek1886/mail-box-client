@@ -11,6 +11,7 @@ const Header = () => {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const dispatch = useDispatch();
   const history = useHistory();
+  const user = localStorage.getItem("email");
 
   const logoutHandler = () => {
     dispatch(authActions.logout());
@@ -27,9 +28,17 @@ const Header = () => {
             Mail Box Client
           </Navbar.Brand>
           {isLoggedIn && (
-            <Button variant="outline-secondary" onClick={logoutHandler}>
-              Logout
-            </Button>
+            <div className="text-end">
+              <Button variant="outline-secondary" onClick={logoutHandler}>
+                Logout
+              </Button>
+              <p
+                className="p-0 m-0"
+                style={{ fontSize: "10px", color: "grey" }}
+              >
+                Signed in as: <span className="text-secondary">{user}</span>
+              </p>
+            </div>
           )}
         </Container>
       </Navbar>

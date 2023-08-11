@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 
 import { Form, Button, Container, Card } from "react-bootstrap";
-import { useHistory, Link } from 'react-router-dom'
+import { useHistory, Link } from "react-router-dom";
+import useAuth from "../../hooks/auth-hook";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const SignUp = () => {
     confirmPassword: "",
   });
   const history = useHistory();
+  const [authAction] = useAuth();
 
   const inputFormHandler = (e) => {
     const { name, value } = e.target;
@@ -20,43 +22,15 @@ const SignUp = () => {
   };
 
   const submitHandler = async (e) => {
-    try {
       e.preventDefault();
 
       const inputData = { ...formData, returnSecureToken: true };
       if (inputData.password !== inputData.confirmPassword) {
         alert("please set correct password");
       } else {
-        const res = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDH9plc7T7h6CQDIKTBp6HCF-nBjgzPDHg`,
-          {
-            method: "POST",
-            body: JSON.stringify(inputData),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (res.ok) {
-          history.replace('/login');
-          setFormData({
-            email: "",
-            password: "",
-            confirmPassword: "",
-          });
-        } else {
-          const data = await res.json();
-          let errorMessage = "Something went wrong! Try again.";
-          if (data && data.error && data.error.message) {
-            errorMessage = data.error.message;
-          }
-          throw new Error(errorMessage);
-        }
+        authAction(inputData, "signup");
       }
-    } catch (err) {
-      alert(err.message);
-    }
+
   };
 
   return (
@@ -105,7 +79,7 @@ const SignUp = () => {
           </Form.Floating>
           <div className="d-flex flex-column align-items-center justify-content-center gap-2  mt-2">
             <Button type="submit">Sign Up</Button>
-            <Link to='/login' >
+            <Link to="/login">
               <Button variant="boder-info">
                 Already have an account? Login
               </Button>

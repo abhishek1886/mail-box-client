@@ -11,15 +11,12 @@ const Inbox = () => {
   const [showList, setShowList] = useState(true);
   const [id, setId] = useState(null);
   const inbox = useSelector((state) => state.inbox.inboxItems);
-  const dataFetched = useSelector((state) => state.inbox.dataFetched);
   const { patchData } = useGet();
   const history = useHistory();
 
   useEffect(() => {
-    if (dataFetched) {
-      history.push("/editor/inbox");
-    }
-  }, [dataFetched, history]);
+      history.push("/mails/inbox");
+  }, [ history ]);
 
   const emailClickHandler = async (id) => {
     setShowList(false);
@@ -49,7 +46,7 @@ const Inbox = () => {
   const goBackHandler = () => {
     setId(null);
     setShowList(true);
-    history.push("/editor/inbox");
+    history.push("/mails/inbox");
   };
 
   return (

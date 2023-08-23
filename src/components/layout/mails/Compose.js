@@ -1,11 +1,11 @@
-import React, { useDebugValue, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 import { Editor } from "react-draft-wysiwyg";
 import "../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { Form, InputGroup, Button } from "react-bootstrap";
+import { Form, InputGroup, Button, Card } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { sentActions } from "../../../store/sent-slice";
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 import useGet from "../../hooks/useFetch";
 
 const Compose = () => {
@@ -17,6 +17,11 @@ const Compose = () => {
   const { postData } = useGet();
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const formDataRef = useRef(formData);
+  formDataRef.current = formData;
+  const editorStateRef = useRef(editorState);
+  editorStateRef.current = editorState;
 
   const formChangeHandler = (e) => {
     const { name, value } = e.target;
@@ -30,11 +35,7 @@ const Compose = () => {
     setEditorState(editorState);
   };
 
-  useEffect(() => {
-    history.push('/editor/compose')
-  }, [])
-  
-  const submitHandler = async(e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
 
     const sendeeEmail = formData.email.replace(/[@.]/g, "");
@@ -55,8 +56,8 @@ const Compose = () => {
       isNew: true,
     };
 
-    await postData(sendeeEmail, "recieved", data)
-    await postData(senderEmail, "sent", data)
+    await postData(sendeeEmail, "recieved", data);
+    await postData(senderEmail, "sent", data);
 
     setFormData({
       email: "",
@@ -66,8 +67,35 @@ const Compose = () => {
     dispatch(sentActions.addItem(data));
   };
 
+  useEffect(() => {
+    history.push("/mails/compose");
+
+    return () => {
+      //Draft
+      const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (isValidEmail(formDataRef.current.email)) {
+        const payload = {
+          ...formDataRef.current,
+          message: editorStateRef.current.getCurrentContent().getPlainText(),
+          date: new Date().toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          }),
+          isNew: true,
+          id: Math.random().toString()
+        };
+        const user = localStorage.getItem("email").replace(/[@.]/g, '');
+        postData(user, "drafts", payload);
+      }
+    };
+  }, []);
+
   return (
-    <div className="bg-light p-2" style={{ maxWidth: "700px" }}>
+    <Card
+      className="bg-light p-2 shadow mt-2 me-2"
+      style={{ maxWidth: "700px" }}
+    >
       <Form onSubmit={submitHandler}>
         <InputGroup className="mb-2">
           <InputGroup.Text id="toUser">To..</InputGroup.Text>
@@ -82,7 +110,7 @@ const Compose = () => {
         </InputGroup>
 
         <InputGroup className="mb-2">
-        <InputGroup.Text id="toUser">Sub</InputGroup.Text>
+          <InputGroup.Text id="toUser">Sub</InputGroup.Text>
           <Form.Control
             type="text"
             aria-describedby="subject"
@@ -92,6 +120,7 @@ const Compose = () => {
             required
           />
         </InputGroup>
+        <Form.Label>Message:</Form.Label>
         <Editor
           required
           toolbarOnFocus
@@ -107,7 +136,7 @@ const Compose = () => {
           </Button>
         </div>
       </Form>
-    </div>
+    </Card>
   );
 };
 

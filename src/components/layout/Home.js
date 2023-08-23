@@ -6,7 +6,7 @@ import { Link, useHistory } from "react-router-dom";
 const Home = () => {
   const history = useHistory();
   const clickHandler = () => {
-    history.push("/editor");
+    history.push("/mails");
   };
   return (
     <Container fluid className="m-5">

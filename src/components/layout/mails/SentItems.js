@@ -1,35 +1,21 @@
 import React from "react";
 import { ListGroup, Badge, Image } from "react-bootstrap";
-import { useDispatch } from "react-redux";
-import { sentActions } from "../../../store/sent-slice";
-import axios from "axios";
 import { useHistory } from "react-router-dom";
+import useGet from "../../hooks/useFetch";
 
 const SentItems = (props) => {
-  const dispatch = useDispatch();
   const history = useHistory();
-
+  const { deleteData } = useGet();
+  
   const listItemClickHandler = () => {
-    history.push(`/editor/inbox/${props._id}`);
+    history.push(`/mails/sent/${props._id}`);
     props.onClick(props._id);
   };
 
   const deleteButtonHandler = (event) => {
     event.stopPropagation();
 
-    console.log(props._id);
-    const email = localStorage.getItem("email").replace(/[@.]/g, "");
-    axios
-      .delete(
-        `https://mail-box-client-a8037-default-rtdb.firebaseio.com/${email}/sent/${props._id}.json`
-      )
-      .catch((err) => {
-        alert(err.message);
-      });
-    const payload = {
-      _id: props._id,
-    };
-    dispatch(sentActions.removeItems(payload));
+    deleteData(props._id, "sent");
   };
   return (
     <ListGroup.Item

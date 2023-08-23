@@ -6,7 +6,7 @@ import Header from "./components/layout/Header";
 import SignUp from "./components/layout/inputs/SignUp";
 import LogIn from "./components/layout/inputs/LogIn";
 import Home from "./components/layout/Home";
-import Editor from "./components/layout/Editor";
+import Mails from "./components/layout/Mails";
 import { authActions } from "./store/auth-slice";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
@@ -38,14 +38,15 @@ const App = () => {
           {isLoggedIn && <Route path="/home">
             <Home />
           </Route>}
-          {isLoggedIn && <Route path="/editor">
-            <Editor />
+          {isLoggedIn && <Route path="/mails">
+            <Mails />
           </Route>}
           <Route path="*">
             <Redirect to='/' />
           </Route>
         </Switch>
       </main>
+
     </React.Fragment>
   );
 };

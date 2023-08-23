@@ -29,7 +29,7 @@ const Header = () => {
           </Navbar.Brand>
           {isLoggedIn && (
             <div className="text-end">
-              <Button variant="outline-secondary" onClick={logoutHandler}>
+              <Button variant="outline-secondary" onClick={logoutHandler} size="sm">
                 Logout
               </Button>
               <p

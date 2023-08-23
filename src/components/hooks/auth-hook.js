@@ -8,7 +8,6 @@ const useAuth = () => {
 
   const authAction = async (payload, type) => {
     try {
-      console.log(payload, type);
       let res;
 
       if (type === "signup") {

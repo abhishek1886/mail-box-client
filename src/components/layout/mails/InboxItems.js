@@ -1,34 +1,21 @@
 import React from "react";
-
 import { ListGroup, Badge, Image } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { inboxActions } from "../../../store/inbox-slice";
-import axios from "axios";
+import useGet from "../../hooks/useFetch";
 
 const InboxItems = (props) => {
   const history = useHistory();
-  const dispatch = useDispatch();
+  const { deleteData } = useGet();
+  
   const listItemClickHandler = () => {
-    history.push(`/editor/inbox/${props._id}`);
+    history.push(`/mails/inbox/${props._id}`);
     props.onClick(props._id);
   };
 
   const deleteButtonHandler = (event) => {
     event.stopPropagation();
 
-    const email = localStorage.getItem("email").replace(/[@.]/g, "")
-    axios
-      .delete(
-        `https://mail-box-client-a8037-default-rtdb.firebaseio.com/${email}/recieved/${props._id}.json`
-      )
-      .catch((err) => {
-        alert(err.message);
-      });
-    const payload = {
-      _id: props._id
-    };
-    dispatch(inboxActions.removeItems(payload));
+    deleteData(props._id, "recieved")
   };
   return (
     <ListGroup.Item

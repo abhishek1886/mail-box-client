@@ -6,8 +6,6 @@ const sent = createSlice({
   name: "sent",
   initialState: initialState,
   reducers: {
-    refreshItems(state, action) {},
-
     addItem(state, action) {
       state.dataFetched = true;
       state.sentItems = [ action.payload, ...state.sentItems ];

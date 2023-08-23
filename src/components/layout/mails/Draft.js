@@ -2,55 +2,45 @@ import React, { useEffect, useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { ListGroup } from "react-bootstrap";
-import { sentActions } from "../../../store/sent-slice";
-import SentItems from "./SentItems";
 import { useHistory } from "react-router-dom";
+import { draftActions } from "../../../store/draft-slice";
 import Email from "./Email";
+import DraftItems from "./DraftItmes";
 import useGet from "../../hooks/useFetch";
 
-const Sent = () => {
+const Sent = (props) => {
   const [showList, setShowList] = useState(true);
   const [id, setId] = useState(null);
-  const sent = useSelector((state) => state.sent.sentItems);
+  const draft = useSelector((state) => state.draft.draftItems);
   const dispatch = useDispatch();
-  const dataFetched = useSelector((state) => state.sent.dataFetched);
+  const dataFetched = useSelector((state) => state.draft.dataFetched);
   const { fetchData } = useGet();
   const history = useHistory();
 
   useEffect(() => {
     if (!dataFetched) {
-      fetchData("sent");
+      fetchData("drafts");
     }
-    if (dataFetched) {
-      history.push("/editor/sent");
-    }
-  }, [dataFetched, dispatch]);
+    history.push("/mails/drafts");
+  }, [dataFetched, history]);
 
   const emailClickHandler = async (id) => {
     setShowList(false);
-    const data = sent.filter((data) => data._id === id);
+    const data = draft.filter((data) => data._id === id);
     setId(data[0]);
-    const email = localStorage.getItem("email").replace(/[@.]/g, "");
-    // await axios.patch(
-    //   `https://mail-box-client-a8037-default-rtdb.firebaseio.com/${email}/recieved/${id}.json`,
-    //   {
-    //     isNew: false,
-    //   }
-    // );
 
-    dispatch(sentActions.removeItems({ type: "all" }));
+    dispatch(draftActions.removeItems({ type: "all" }));
   };
 
   let listItems = [];
-  if (sent) {
-    listItems = sent.map((item) => (
-      <SentItems
+  if (draft) {
+    listItems = draft.map((item) => (
+      <DraftItems
         key={item.id}
         id={item.id}
         message={item.message}
         sub={item.subject}
-        sendeeEmail={item.sendeeEmail}
-        senderEmail={item.sendeeEmail}
+        email={item.email}
         date={item.date}
         onClick={emailClickHandler}
         _id={item._id}
@@ -61,13 +51,17 @@ const Sent = () => {
   const goBackHandler = () => {
     setId(null);
     setShowList(true);
-    history.push("/editor/inbox");
+    history.push("/mails/draft");
+  };
+
+  const editButtonHandler = (id) => {
+    props.onDraft(id);
   };
 
   return (
     <React.Fragment>
-      {showList && <h3>Sent</h3>}
-      {listItems.length === 0 && showList && <p>No sent emails. </p>}
+      {showList && <h3>Draft</h3>}
+      {listItems.length === 0 && showList && <p>No Drafts. </p>}
       {listItems.length > 0 && showList && (
         <div className="scrollable-list">
           <ListGroup
@@ -80,7 +74,12 @@ const Sent = () => {
         </div>
       )}
       {!showList && id && (
-        <Email goBack={goBackHandler} data={id} location={"sent"} />
+        <Email
+          goBack={goBackHandler}
+          onEdit={editButtonHandler}
+          data={id}
+          location={"draft"}
+        />
       )}
     </React.Fragment>
   );
